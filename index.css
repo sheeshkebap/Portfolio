@@ -7,42 +7,56 @@ body {
 	color: #111;
 }
 
+:root {
+	/* leicht anpassbare Werte */
+	--container-pad: 18px;
+	--cards-gap: 18px;
+}
+
 /* Zentrierter Container: auf breiten Bildschirmen entstehen seitliche weiße Ränder
    und wir behalten horizontales Padding; vertikales Padding wird bei der Card-Höhe berücksichtigt */
 .container {
 	max-width: 1200px;
 	margin: 0 auto;
 	/* vertikales Padding (oben + unten = 36px) wird bei .cards Höhe abgezogen */
-	padding: 18px;
+	padding: var(--container-pad);
 }
 
-/* Die drei Karten füllen zusammen genau die Viewport-Höhe (Padding oben+unten abziehen) */
+/* Die drei Karten füllen zusammen genau die Viewport-Höhe (Padding oben+unten und Gaps abziehen) */
 .cards {
-	/* reduziert Überlauf durch container-vertical-padding */
-	height: calc(100vh - 36px);
+	/* reduzierte Überlauf-Berechnung: wir rechnen pro Card die genaue Höhe; gap wird verwendet */
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: var(--cards-gap);
+	/* height: calc(100vh - 36px); */
 }
 
-/* Jede Card nimmt gleichen Anteil ein */
+/* Jede Card nimmt gleichen Anteil ein -> fest berechnete Höhe statt flex:1 */
 .card {
 	position: relative;
-	display: block;
-	flex: 1 1 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	overflow: hidden;
 	border-radius: 14px;
 	text-decoration: none;
+	/* feste Höhe: (100vh - 2*container-pad - 2*gaps) / 3
+	   Es gibt 2 Gaps zwischen 3 Items in column layout */
+	flex: none;
+	height: calc((100vh - (var(--container-pad) * 2) - (var(--cards-gap) * 2)) / 3);
 	/* kleine Schattenoptik, optional */
 	box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* Bild: immer die gesamte Card füllen, Seitenverhältnis wahren (object-fit) */
+/* Bild: fülle die Card-Höhe vollständig, behalte Seitenverhältnis und zeige komplettes Bild */
 .card img {
-	width: 100%;
+	/* wichtig: Höhe bestimmt die Skalierung, Breite folgt automatisch */
 	height: 100%;
-	object-fit: cover; /* bewahrt Proportionen, kann bei verschiedenen Seitenverhältnissen Teile abschneiden */
+	width: auto;
+	max-width: 100%; /* falls Breite ansonsten größer als Card-Breite würde, skaliere nach Breite */
+	object-fit: contain; /* Gesamtbild sichtbar, keine Abschneidung */
 	display: block;
+	margin: 0 auto;
 	transition: transform 500ms cubic-bezier(.2,.9,.2,1), filter 400ms ease;
 }
 
@@ -115,8 +129,12 @@ body {
 	}
 	.cards {
 		/* kein vertikales Padding mehr, volle Höhe */
-		height: 100vh;
+		/* gap wird kleiner */
 		gap: 8px;
+	}
+	/* Mobile Card-Höhe neu berechnen: (100vh - 2*0 - 2*8px) / 3 */
+	.card {
+		height: calc((100vh - (0px) - (8px * 2)) / 3);
 	}
 	.overlay { padding: 12px; }
 	.overlay h3 { font-size: 1rem; }
