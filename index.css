@@ -1,0 +1,124 @@
+/* Basis */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+	background: #ffffff; /* Seitenhintergrund bleibt weiß (seitliche Ränder wirken so weiß) */
+	font-family: Arial, Helvetica, sans-serif;
+	color: #111;
+}
+
+/* Zentrierter Container: auf breiten Bildschirmen entstehen seitliche weiße Ränder
+   und wir behalten horizontales Padding; vertikales Padding wird bei der Card-Höhe berücksichtigt */
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	/* vertikales Padding (oben + unten = 36px) wird bei .cards Höhe abgezogen */
+	padding: 18px;
+}
+
+/* Die drei Karten füllen zusammen genau die Viewport-Höhe (Padding oben+unten abziehen) */
+.cards {
+	/* reduziert Überlauf durch container-vertical-padding */
+	height: calc(100vh - 36px);
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+/* Jede Card nimmt gleichen Anteil ein */
+.card {
+	position: relative;
+	display: block;
+	flex: 1 1 0;
+	overflow: hidden;
+	border-radius: 14px;
+	text-decoration: none;
+	/* kleine Schattenoptik, optional */
+	box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Bild: immer die gesamte Card füllen, Seitenverhältnis wahren (object-fit) */
+.card img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* bewahrt Proportionen, kann bei verschiedenen Seitenverhältnissen Teile abschneiden */
+	display: block;
+	transition: transform 500ms cubic-bezier(.2,.9,.2,1), filter 400ms ease;
+}
+
+/* Overlay (die graue Box), startet außerhalb und fährt hoch */
+.overlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 33.333%; /* 1/3 der Card-Höhe */
+	background: rgba(70,70,70,0.62); /* dunkle, halbtransparente Box */
+	color: #fff;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center; /* horizontal zentrieren */
+	text-align: center;  /* Text zentriert */
+	transform: translateY(100%);
+	transition: transform 350ms cubic-bezier(.2,.9,.2,1);
+}
+
+/* Feinheiten: runde Ecken an der Box passend zur Card */
+.card::after {
+	/* Mit diesem Pseudo-Element wird sichergestellt, dass die unteren Ecken der Overlay-Box mitgerundet sind */
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	border-radius: 14px;
+}
+
+/* Hover / Fokus Effekte */
+.card:hover img,
+.card:focus img {
+	transform: scale(1.03);
+	filter: blur(2px) brightness(0.6);
+}
+
+.card:hover .overlay,
+.card:focus .overlay {
+	transform: translateY(0);
+}
+
+/* Typografie im Overlay */
+.overlay h3 {
+	margin: 0 0 6px 0;
+	font-size: 1.15rem;
+	letter-spacing: 0.4px;
+}
+.overlay p {
+	margin: 0;
+	font-size: 0.95rem;
+	opacity: 0.95;
+	line-height: 1.2;
+}
+
+/* Accessibility: klickbare Fläche zeigt Fokus */
+.card:focus {
+	outline: 3px solid rgba(34,150,243,0.18);
+	outline-offset: 3px;
+}
+
+/* Mobile: auf engen Bildschirmen keine seitlichen Gaps und kleinere Abstände,
+   außerdem container-padding entfernen und die .cards wieder 100vh machen */
+@media (max-width: 600px) {
+	.container {
+		max-width: 100%;
+		padding: 0;
+	}
+	.cards {
+		/* kein vertikales Padding mehr, volle Höhe */
+		height: 100vh;
+		gap: 8px;
+	}
+	.overlay { padding: 12px; }
+	.overlay h3 { font-size: 1rem; }
+	.overlay p { font-size: 0.9rem; }
+}
